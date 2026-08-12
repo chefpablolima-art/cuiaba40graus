@@ -1,0 +1,25 @@
+name: Robô de Tráfego Cuiabá 40 Graus
+
+on:
+  schedule:
+    # Roda a cada 2 horas
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+
+jobs:
+  executar-robo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar código do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar o Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Instalar dependências
+        run: npm install
+
+      - name: Executar o robô de tráfego
+        run: node trafego.js
