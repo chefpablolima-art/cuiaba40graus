@@ -1,25 +1,18 @@
 name: Robô de Tráfego Cuiabá 40 Graus
 
 on:
-  schedule:
-    # Roda a cada 2 horas
-    - cron: '0 */2 * * *'
-  workflow_dispatch:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch: # <-- Isso libera o botão de disparo manual no GitHub
 
 jobs:
-  executar-robo:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Baixar código do repositório
-        uses: actions/checkout@v4
-
-      - name: Configurar o Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v3
+      - name: Use Node.js
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
-
-      - name: Instalar dependências
-        run: npm install
-
-      - name: Executar o robô de tráfego
-        run: node trafego.js
+          node-version: '18'
+      - run: npm install
+      - run: node trafego.js
