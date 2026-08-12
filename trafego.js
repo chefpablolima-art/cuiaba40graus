@@ -1,13 +1,13 @@
 const puppeteer = require('puppeteer');
 
 // ==========================================
-// CONFIGURAÇÕES DO PROJETO (META: 11.000 Acessos)
+// CONFIGURAÇÕES DO PROJETO (META: 22.000+ Acessos)
 // ==========================================
 const URL_BASE = 'https://cuiaba40graus.com.br';
 
 function gerarMetaDiariaAleatoria() {
     const min = 22000;
-    const max = 23500;
+    const max = 25000;
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
@@ -72,16 +72,14 @@ function selecionarCidadePorPeso() {
     return "Várzea Grande";
 }
 
-// CONFIGURAÇÃO DE FLUXO PROPORCIONAL À NOVA META (Manhã Intensificada)
 function obterConfiguracaoFluxo() {
     const hora = new Date().getHours();
-    const proporcaoMeta = TOTAL_VISITAS_DIARIAS / 11000;
+    const proporcaoMeta = TOTAL_VISITAS_DIarias = TOTAL_VISITAS_DIARIAS / 22000;
     
-    // Manhã intensificada (concorrência aumentada e delay reduzido)
     if (hora >= 7 && hora < 12) return { nome: "Fluxo Crescente (Manhã)", concorrencia: Math.round(3 * proporcaoMeta), delayMinutos: 0.15 };
     else if (hora >= 12 && hora < 18) return { nome: "Fluxo Alto (Tarde)", concorrencia: Math.round(2 * proporcaoMeta), delayMinutos: 0.12 };
     else if (hora >= 18 && hora <= 23) return { nome: "Pico Máximo (Noite)", concorrencia: Math.round(3 * proporcaoMeta), delayMinutos: 0.03 };
-    else return { nome: "Madrugada (Repouso)", concorrencia: 0, delayMinutos: 2.0 }; // Pausa fora do horário das 07h-23h
+    else return { nome: "Madrugada (Repouso)", concorrencia: 0, delayMinutos: 2.0 };
 }
 
 function obterRefererOrigem() {
@@ -140,13 +138,12 @@ async function simularSessao(id) {
         await page.setViewport(dispositivo.viewport);
         if (origem.url) await page.setExtraHTTPHeaders({ 'referer': origem.url });
 
-        // Tratamento de erro leve na navegação para não quebrar a sessão
         await page.goto(URL_BASE, { waitUntil: 'domcontentloaded', timeout: 60000 }).catch(() => {});
         console.log(`[Sessão ${id}] Cidade: ${cidade} | Disp: ${dispositivo.tipo} | Fonte: ${origem.tipo}`);
         
         await new Promise(r => setTimeout(r, 12000));
     } catch (e) {
-        // Silencia erros no console para o script nunca parar
+        // Silencia erros
     } finally {
         if (browser) {
             await browser.close().catch(() => {});
@@ -171,7 +168,6 @@ async function iniciarSistema() {
         try {
             const hora = new Date().getHours();
             
-            // Respeita a faixa de funcionamento das 07h às 23h
             if (hora < 7 || hora > 23) {
                 console.log(`[SISTEMA] Fora do horário programado (${hora}h). Aguardando o expediente das 07h às 23h...`);
                 await new Promise(r => setTimeout(r, 60000 * 5));
@@ -183,13 +179,11 @@ async function iniciarSistema() {
             visitasFeitas += fluxo.concorrencia;
             await new Promise(r => setTimeout(r, fluxo.delayMinutos * 60 * 1000));
         } catch (err) {
-            // Captura qualquer erro global no loop para garantir que o script continue rodando infindavelmente
             await new Promise(r => setTimeout(r, 5000));
         }
     }
 }
 
-// Tratamento de exceções globais para evitar crash do Node.js
 process.on('uncaughtException', () => {});
 process.on('unhandledRejection', () => {});
 
