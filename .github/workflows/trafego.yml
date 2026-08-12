@@ -1,18 +1,26 @@
 name: Robô de Tráfego Cuiabá 40 Graus
-
-on:
-  push:
-    branches: [ "main" ]
-  workflow_dispatch: # <-- Isso libera o botão de disparo manual no GitHub
+on: [push, workflow_dispatch]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Use Node.js
+      - name: Checkout código
+        uses: actions/checkout@v3
+
+      - name: Instalar Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '18'
-      - run: npm install
-      - run: node trafego.js
+
+      - name: Instalar dependências do sistema
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget gnupg
+          sudo apt-get install -y libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2 libpangocairo-1.0-0 libx11-xcb1 libxss1 libxtst6
+
+      - name: Instalar dependências Node
+        run: npm install
+
+      - name: Rodar robô
+        run: node trafego.js
